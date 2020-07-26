@@ -1,0 +1,35 @@
+{
+  "name": "mern-link-shrinker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "server": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MoophHD/mern-link-shortener.git"
+  },
+  "keywords": [
+    "mern",
+    "react"
+  ],
+  "author": "Danial Sizykh, <sizykh.danila@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MoophHD/mern-link-shortener/issues"
+  },
+  "homepage": "https://github.com/MoophHD/mern-link-shortener#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.1",
+    "express": "^4.17.1",
+    "express-validator": "^6.6.0",
+    "mongoose": "^5.9.25"
+  },
+  "devDependencies": {
+    "concurrently": "^5.2.0",
+    "nodemon": "^2.0.4"
+  }
+}
