@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const { check, validationResult } = require("express-validator");
+const config = require("config");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 
@@ -7,8 +9,9 @@ router.post(
   "/register",
   [
     check("email", "Invalid email").isEmail(),
-    check("password", "Minimal length - 6 symbols")
-      .isLength({ min: 6 }),
+    check("password", "Minimal password length - 6 symbols").isLength({
+      min: 6,
+    }),
   ],
   async (req, res) => {
     try {
@@ -16,19 +19,19 @@ router.post(
       if (!errors.isEmpty()) {
         return res.status(400).json({
           errors: errors.array(),
-          message: "Invalid data for registration"
-        })
+          message: "Invalid data for registration",
+        });
       }
 
       const { email, password } = req.body;
 
       const candidate = await User.findOne({ email });
-
       if (candidate) {
         return res.status(400).json({ message: `User already exists` });
       }
 
-      const hashedPaswword = await bcrypt.hash(password);
+      const hashedPaswword = await bcrypt.hash(password, 12);
+
       const user = new User({ email, password: hashedPaswword });
 
       await user.save();
@@ -42,6 +45,48 @@ router.post(
   }
 );
 
-router.post("/login", (req, res) => {});
+router.post(
+  "/login",
+  [
+    check("email", "Invalid email").normalizeEmail().isEmail(),
+    check("password", "Input password").exists(),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array(),
+          message: "Invalid data for login",
+        });
+      }
+
+      const { email, password } = req.body;
+
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(400).json({ message: "User wasn't found" });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Incorrect password" });
+      }
+
+      const token = jwt.sign({ userId: user.id }, config.get("jwtSecret"), {
+        expiresIn: "1h",
+      });
+
+      res.json({ token, userId: user.id });
+
+      res.status(201).json({ message: "User was registered" });
+    } catch (e) {
+      res
+        .status(500)
+        .json({ message: `Something went terribly wrong,\n ${e}` });
+    }
+  }
+);
 
 module.exports = router;
