@@ -1,9 +1,22 @@
-import React, {useState} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import useHttp from "../hooks/http.hook";
+import useMessage from "../hooks/message.hook";
+import AuthContext from "../context/auth.context";
 
 const AuthPage = () => {
+  const auth = useContext(AuthContext);
+  const message = useMessage();
   const { loading, error, request, clearError } = useHttp();
   const [form, setForm] = useState({ email: "", password: "" });
+
+  useEffect(() => {
+    message(error);
+    clearError();
+  }, [error, message, clearError]);
+
+  useEffect(() => {
+    window.M.updateTextFields();
+  }, []);
 
   const handleChange = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
@@ -12,8 +25,15 @@ const AuthPage = () => {
   const handleRegister = async (event) => {
     try {
       const data = await request("/auth/register", "POST", { ...form });
+      message(data.message);
+    } catch (e) {}
+  };
 
-      console.log(`Data`, data);
+  const handleLogin = async (event) => {
+    try {
+      const data = await request("/auth/login", "POST", { ...form });
+      message(data.message);
+      auth.login(data.token, data.userId);
     } catch (e) {}
   };
 
@@ -34,6 +54,7 @@ const AuthPage = () => {
                   name="email"
                   className="input-yellow"
                   onChange={handleChange}
+                  value={form.email}
                 />
                 <label htmlFor="email">Email</label>
               </div>
@@ -46,6 +67,7 @@ const AuthPage = () => {
                   name="password"
                   className="input-yellow"
                   onChange={handleChange}
+                  value={form.password}
                 />
                 <label htmlFor="password">Password</label>
               </div>
@@ -53,9 +75,10 @@ const AuthPage = () => {
           </div>
           <div className="card-action">
             <button
-              disabled={loading}
+              onClick={handleLogin}
               className="btn yellow darken-4"
               style={{ marginRight: 10 }}
+              disabled={loading}
             >
               Sign in
             </button>
