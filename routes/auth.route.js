@@ -82,9 +82,7 @@ router.post(
 
       res.status(201).json({ message: "User was registered" });
     } catch (e) {
-      res
-        .status(500)
-        .json({ message: `Something went terribly wrong,\n ${e}` });
+      res.status(500).json({ message: 'Что-то пошло не так, попробуйте снова' })
     }
   }
 );
