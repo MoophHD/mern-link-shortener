@@ -29,7 +29,8 @@ Latest commit 7293c14 on May 14
 @stuartpb@shiftkey@SimonSiefke@TennyZhuang@venatoria@ro31337@Richienb@melonmanchan@gouthamve@jucrouzet@cheddar@arcresu
 116 lines (86 sloc)  1.77 KB
   
-
+#build
+build/
 #config
 config/
 # Logs

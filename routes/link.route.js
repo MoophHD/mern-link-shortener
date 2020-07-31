@@ -6,10 +6,11 @@ const shortId = require("shortid");
 
 router.post("/generate", auth, async (req, res) => {
   try {
+    const owner = req.user.userId;
     const baseUrl = config.get("baseUrl");
     const { from } = req.body;
 
-    const existing = await Link.findOne({ from });
+    const existing = await Link.findOne({ from, owner});
 
     if (existing) {
       return res.status(200).json({ link: existing });
@@ -21,7 +22,7 @@ router.post("/generate", auth, async (req, res) => {
       from,
       to,
       code,
-      owner: req.user.userId,
+      owner
     });
 
     await link.save();

@@ -54,6 +54,7 @@ router.post(
   async (req, res) => {
     try {
       const errors = validationResult(req);
+
       if (!errors.isEmpty()) {
         return res.status(400).json({
           errors: errors.array(),
@@ -79,10 +80,10 @@ router.post(
       });
 
       res.json({ token, userId: user.id });
-
-      res.status(201).json({ message: "User was registered" });
     } catch (e) {
-      res.status(500).json({ message: 'Что-то пошло не так, попробуйте снова' })
+      res.status(500).json({ message: `Something went terribly wrong: ${e}` });
+      // res.status(500);
+
     }
   }
 );
